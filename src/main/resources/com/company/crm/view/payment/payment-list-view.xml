@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<view xmlns="http://jmix.io/schema/flowui/view"
+      xmlns:c="http://jmix.io/schema/flowui/jpql-condition"
+      title="msg://paymentListView.title"
+      focusComponent="paymentsDataGrid">
+    <data>
+        <collection id="paymentsDc"
+                    class="com.company.crm.entity.Payment">
+            <fetchPlan extends="_base">
+                <property name="invoice" fetchPlan="_instance_name"/>
+            </fetchPlan>
+            <loader id="paymentsDl" readOnly="true">
+                <query>
+                    <![CDATA[select e from Payment e]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <facets>
+        <dataLoadCoordinator auto="true"/>
+        <urlQueryParameters>
+            <genericFilter component="genericFilter"/>
+            <pagination component="pagination"/>
+        </urlQueryParameters>
+    </facets>
+    <actions>
+        <action id="selectAction" type="lookup_select"/>
+        <action id="discardAction" type="lookup_discard"/>
+    </actions>
+    <layout>
+        <genericFilter id="genericFilter"
+                       dataLoader="paymentsDl">
+            <properties include=".*"/>
+        </genericFilter>
+        <hbox id="buttonsPanel" classNames="buttons-panel">
+            <button id="createButton" action="paymentsDataGrid.createAction"/>
+            <button id="editButton" action="paymentsDataGrid.editAction"/>
+            <button id="removeButton" action="paymentsDataGrid.removeAction"/>
+            <simplePagination id="pagination" dataLoader="paymentsDl"/>
+        </hbox>
+        <dataGrid id="paymentsDataGrid"
+                  width="100%"
+                  minHeight="20em"
+                  dataContainer="paymentsDc"
+                  columnReorderingAllowed="true">
+            <actions>
+                <action id="createAction" type="list_create"/>
+                <action id="editAction" type="list_edit"/>
+                <action id="removeAction" type="list_remove"/>
+            </actions>
+            <columns resizable="true">
+                <column property="invoice"/>
+                <column property="date"/>
+                <column property="amount"/>
+            </columns>
+        </dataGrid>
+        <hbox id="lookupActions" visible="false">
+            <button id="selectButton" action="selectAction"/>
+            <button id="discardButton" action="discardAction"/>
+        </hbox>
+    </layout>
+</view>

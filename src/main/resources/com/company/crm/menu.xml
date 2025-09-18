@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <menu-config xmlns="http://jmix.io/schema/flowui/menu">
 
-    <menu id="application" title="msg://com.company.crm/menu.application.title" opened="true">
+    <menu opened="true" id="application" title="msg://com.company.crm/menu.application.title">
+        <item view="Client.list" title="msg://com.company.crm.view.client/clientListView.title"/>
+        <item view="Order_.list" title="msg://com.company.crm.view.order/orderListView.title"/>
+        <item view="Invoice.list" title="msg://com.company.crm.view.invoice/invoiceListView.title"/>
+        <item view="Payment.list" title="msg://com.company.crm.view.payment/paymentListView.title"/>
         <item view="User.list" title="msg://com.company.crm.view.user/UserListView.title"/>
     </menu>
-
 </menu-config>
