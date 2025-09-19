@@ -7,7 +7,8 @@ import org.springframework.lang.Nullable;
 
 public enum ClientType implements EnumClass<String> {
 
-    COMMERCIAL("C");
+    BUSINESS("B"),
+    INDIVIDUAL("I");
 
     private final String id;
 

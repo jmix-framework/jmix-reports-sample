@@ -37,6 +37,9 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
+    // Java Faker for demo data generation
+    implementation 'net.datafaker:datafaker:2.5.0'
+
     runtimeOnly 'org.hsqldb:hsqldb'
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
