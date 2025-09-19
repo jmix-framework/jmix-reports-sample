@@ -21,54 +21,61 @@
         <action id="closeAction" type="detail_close"/>
     </actions>
     <layout>
-        <formLayout id="form" dataContainer="clientDc">
-            <responsiveSteps>
-                <responsiveStep minWidth="0" columns="1"/>
-                <responsiveStep minWidth="40em" columns="2"/>
-            </responsiveSteps>
-            <textField id="nameField" property="name"/>
-            <textField id="fullNameField" property="fullName"/>
-            <textField id="addressField" property="address"/>
-            <select id="typeField" property="type"/>
-            <textField id="vatNumberField" property="vatNumber"/>
-            <textField id="regNumberField" property="regNumber"/>
-            <textField id="websiteField" property="website"/>
-            <entityPicker id="accountManagerField" property="accountManager">
-                <actions>
-                    <action id="entityLookupAction" type="entity_lookup"/>
-                    <action id="entityClearAction" type="entity_clear"/>
-                </actions>
-            </entityPicker>
-        </formLayout>
-        <h4 text="msg://com.company.crm.entity/Client.contacts"/>
-        <hbox id="contactsButtonsPanel" classNames="buttons-panel">
-            <button action="contactsDataGrid.createAction"/>
-            <button action="contactsDataGrid.editAction"/>
-            <button action="contactsDataGrid.removeAction"/>
-        </hbox>
-        <dataGrid id="contactsDataGrid" dataContainer="contactsDc" width="100%" minHeight="20em">
-            <actions>
-                <action id="createAction" type="list_create">
-                    <properties>
-                        <property name="openMode" value="DIALOG"/>
-                    </properties>
-                </action>
-                <action id="editAction" type="list_edit">
-                    <properties>
-                        <property name="openMode" value="DIALOG"/>
-                    </properties>
-                </action>
-                <action id="removeAction" type="list_remove"/>
-            </actions>
-            <columns>
-                <column property="person"/>
-                <column property="position"/>
-                <column property="startDate"/>
-                <column property="finishDate"/>
-                <column property="phone"/>
-                <column property="email"/>
-            </columns>
-        </dataGrid>
+        <tabSheet width="100%">
+            <tab id="infoTab" label="Info">
+                <formLayout id="form" dataContainer="clientDc">
+                    <responsiveSteps>
+                        <responsiveStep minWidth="0" columns="1"/>
+                        <responsiveStep minWidth="40em" columns="2"/>
+                    </responsiveSteps>
+                    <textField id="nameField" property="name"/>
+                    <textField id="fullNameField" property="fullName"/>
+                    <textField id="addressField" property="address"/>
+                    <select id="typeField" property="type"/>
+                    <textField id="vatNumberField" property="vatNumber"/>
+                    <textField id="regNumberField" property="regNumber"/>
+                    <textField id="websiteField" property="website"/>
+                    <entityPicker id="accountManagerField" property="accountManager">
+                        <actions>
+                            <action id="entityLookupAction" type="entity_lookup"/>
+                            <action id="entityClearAction" type="entity_clear"/>
+                        </actions>
+                    </entityPicker>
+                </formLayout>
+            </tab>
+            <tab id="contactsTab" label="Contacts">
+                <vbox id="contactsTabContent" padding="false">
+                    <hbox id="contactsButtonsPanel" classNames="buttons-panel">
+                        <button action="contactsDataGrid.createAction"/>
+                        <button action="contactsDataGrid.editAction"/>
+                        <button action="contactsDataGrid.removeAction"/>
+                    </hbox>
+                    <dataGrid id="contactsDataGrid" dataContainer="contactsDc" width="100%" minHeight="20em">
+                        <actions>
+                            <action id="createAction" type="list_create">
+                                <properties>
+                                    <property name="openMode" value="DIALOG"/>
+                                </properties>
+                            </action>
+                            <action id="editAction" type="list_edit">
+                                <properties>
+                                    <property name="openMode" value="DIALOG"/>
+                                </properties>
+                            </action>
+                            <action id="removeAction" type="list_remove"/>
+                        </actions>
+                        <columns>
+                            <column property="person"/>
+                            <column property="position"/>
+                            <column property="startDate"/>
+                            <column property="finishDate"/>
+                            <column property="phone"/>
+                            <column property="email"/>
+                        </columns>
+                    </dataGrid>
+                </vbox>
+            </tab>
+        </tabSheet>
         <hbox id="detailActions">
             <button id="saveAndCloseButton" action="saveAction"/>
             <button id="closeButton" action="closeAction"/>
