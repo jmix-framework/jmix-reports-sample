@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ClientProfile" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e8e616e0-d894-4936-a3f5-391682ee794c">
+    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+    <style name="Default" fontName="SansSerif" fontSize="10" isDefault="true"/>
+    <style name="Title" fontName="SansSerif" fontSize="22" isBold="true"/>
+    <style name="Subtitle" fontName="SansSerif" fontSize="8" forecolor="#666666"/>
+    <style name="SectionTitle" fontName="SansSerif" fontSize="12" isBold="true" forecolor="#0B69A3"/>
+    <style name="TableHeader" fontName="SansSerif" fontSize="9" isBold="true" backcolor="#F8FAFC"/>
+    <style name="TableCell" fontName="SansSerif" fontSize="9"/>
+    <style name="Key" fontName="SansSerif" fontSize="9" forecolor="#666666"/>
+    <style name="Value" fontName="SansSerif" fontSize="9"/>
+    
+    <subDataset name="Contacts">
+        <field name="person" class="java.lang.String"/>
+        <field name="position" class="java.lang.String"/>
+        <field name="email" class="java.lang.String"/>
+        <field name="phone" class="java.lang.String"/>
+    </subDataset>
+    
+    <parameter name="CurrentDate" class="java.util.Date" isForPrompting="false">
+        <defaultValueExpression><![CDATA[new java.util.Date()]]></defaultValueExpression>
+    </parameter>
+    
+    <field name="name" class="java.lang.String"/>
+    <field name="fullName" class="java.lang.String"/>
+    <field name="type" class="java.lang.String"/>
+    <field name="address" class="java.lang.String"/>
+    <field name="vatNumber" class="java.lang.String"/>
+    <field name="regNumber" class="java.lang.String"/>
+    <field name="website" class="java.lang.String"/>
+    <field name="accountManager" class="java.lang.String"/>
+    
+    <title>
+        <band height="60">
+            <staticText>
+                <reportElement style="Title" x="0" y="0" width="555" height="30"/>
+                <textElement verticalAlignment="Top"/>
+                <text><![CDATA[Client Profile]]></text>
+            </staticText>
+            <textField pattern="yyyy-MM-dd HH:mm">
+                <reportElement style="Subtitle" x="0" y="34" width="555" height="15"/>
+                <textElement verticalAlignment="Top"/>
+                <textFieldExpression><![CDATA["Generated: " + new SimpleDateFormat("yyyy-MM-dd HH:mm").format($P{CurrentDate})]]></textFieldExpression>
+            </textField>
+        </band>
+    </title>
+    
+    <detail>
+        <band height="202">
+            <staticText>
+                <reportElement style="SectionTitle" x="0" y="10" width="555" height="20"/>
+                <text><![CDATA[Summary]]></text>
+            </staticText>
+            <staticText>
+                <reportElement style="Key" x="0" y="40" width="120" height="15"/>
+                <text><![CDATA[Name]]></text>
+            </staticText>
+            <textField>
+                <reportElement style="Value" x="132" y="40" width="423" height="15"/>
+                <textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement style="Key" x="0" y="61" width="120" height="15"/>
+                <text><![CDATA[Full name]]></text>
+            </staticText>
+            <textField>
+                <reportElement style="Value" x="132" y="61" width="423" height="15"/>
+                <textFieldExpression><![CDATA[$F{fullName}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement style="Key" x="0" y="82" width="120" height="15"/>
+                <text><![CDATA[Type]]></text>
+            </staticText>
+            <textField>
+                <reportElement style="Value" x="132" y="82" width="423" height="15"/>
+                <textFieldExpression><![CDATA[$F{type}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement style="Key" x="0" y="103" width="120" height="15"/>
+                <text><![CDATA[Address]]></text>
+            </staticText>
+            <textField>
+                <reportElement style="Value" x="132" y="103" width="423" height="15"/>
+                <textFieldExpression><![CDATA[$F{address}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement style="Key" x="0" y="124" width="120" height="15"/>
+                <text><![CDATA[VAT number]]></text>
+            </staticText>
+            <textField>
+                <reportElement style="Value" x="132" y="124" width="423" height="15"/>
+                <textFieldExpression><![CDATA[$F{vatNumber}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement style="Key" x="0" y="145" width="120" height="15"/>
+                <text><![CDATA[Registration number]]></text>
+            </staticText>
+            <textField>
+                <reportElement style="Value" x="132" y="145" width="423" height="15"/>
+                <textFieldExpression><![CDATA[$F{regNumber}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement style="Key" x="0" y="166" width="120" height="15"/>
+                <text><![CDATA[Website]]></text>
+            </staticText>
+            <textField>
+                <reportElement style="Value" x="132" y="166" width="423" height="15"/>
+                <textFieldExpression><![CDATA[$F{website}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement style="Key" x="0" y="187" width="120" height="15"/>
+                <text><![CDATA[Account manager]]></text>
+            </staticText>
+            <textField>
+                <reportElement style="Value" x="132" y="187" width="423" height="15"/>
+                <textFieldExpression><![CDATA[$F{accountManager}]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="100">
+            <frame>
+                <reportElement x="0" y="0" width="555" height="100"/>
+                <staticText>
+                    <reportElement style="SectionTitle" x="0" y="10" width="555" height="20"/>
+                    <text><![CDATA[Contacts]]></text>
+                </staticText>
+                <componentElement>
+                    <reportElement x="0" y="40" width="555" height="50"/>
+                    <jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+                        <datasetRun subDataset="Contacts">
+                            <dataSourceExpression><![CDATA[$P{REPORTING}.dataset("Contacts")]]></dataSourceExpression>
+                        </datasetRun>
+                        <jr:column width="55">
+                            <jr:columnHeader style="TableHeader" height="20">
+                                <box>
+                                    <pen lineWidth="0.5" lineColor="#CCCCCC"/>
+                                </box>
+                                <staticText>
+                                    <reportElement x="5" y="0" width="50" height="20"/>
+                                    <textElement verticalAlignment="Middle"/>
+                                    <text><![CDATA[#]]></text>
+                                </staticText>
+                            </jr:columnHeader>
+                            <jr:detailCell style="TableCell" height="20">
+                                <box>
+                                    <pen lineWidth="0.5" lineColor="#CCCCCC"/>
+                                </box>
+                                <textField>
+                                    <reportElement x="5" y="0" width="50" height="20"/>
+                                    <textElement verticalAlignment="Middle"/>
+                                    <textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+                                </textField>
+                            </jr:detailCell>
+                        </jr:column>
+                        <jr:column width="130">
+                            <jr:columnHeader style="TableHeader" height="20">
+                                <box>
+                                    <pen lineWidth="0.5" lineColor="#CCCCCC"/>
+                                </box>
+                                <staticText>
+                                    <reportElement x="5" y="0" width="125" height="20"/>
+                                    <textElement verticalAlignment="Middle"/>
+                                    <text><![CDATA[Person]]></text>
+                                </staticText>
+                            </jr:columnHeader>
+                            <jr:detailCell style="TableCell" height="20">
+                                <box>
+                                    <pen lineWidth="0.5" lineColor="#CCCCCC"/>
+                                </box>
+                                <textField>
+                                    <reportElement x="5" y="0" width="125" height="20"/>
+                                    <textElement verticalAlignment="Middle"/>
+                                    <textFieldExpression><![CDATA[$F{person}]]></textFieldExpression>
+                                </textField>
+                            </jr:detailCell>
+                        </jr:column>
+                        <jr:column width="130">
+                            <jr:columnHeader style="TableHeader" height="20">
+                                <box>
+                                    <pen lineWidth="0.5" lineColor="#CCCCCC"/>
+                                </box>
+                                <staticText>
+                                    <reportElement x="5" y="0" width="125" height="20"/>
+                                    <textElement verticalAlignment="Middle"/>
+                                    <text><![CDATA[Position]]></text>
+                                </staticText>
+                            </jr:columnHeader>
+                            <jr:detailCell style="TableCell" height="20">
+                                <box>
+                                    <pen lineWidth="0.5" lineColor="#CCCCCC"/>
+                                </box>
+                                <textField>
+                                    <reportElement x="5" y="0" width="125" height="20"/>
+                                    <textElement verticalAlignment="Middle"/>
+                                    <textFieldExpression><![CDATA[$F{position}]]></textFieldExpression>
+                                </textField>
+                            </jr:detailCell>
+                        </jr:column>
+                        <jr:column width="130">
+                            <jr:columnHeader style="TableHeader" height="20">
+                                <box>
+                                    <pen lineWidth="0.5" lineColor="#CCCCCC"/>
+                                </box>
+                                <staticText>
+                                    <reportElement x="5" y="0" width="125" height="20"/>
+                                    <textElement verticalAlignment="Middle"/>
+                                    <text><![CDATA[Email]]></text>
+                                </staticText>
+                            </jr:columnHeader>
+                            <jr:detailCell style="TableCell" height="20">
+                                <box>
+                                    <pen lineWidth="0.5" lineColor="#CCCCCC"/>
+                                </box>
+                                <textField>
+                                    <reportElement x="5" y="0" width="125" height="20"/>
+                                    <textElement verticalAlignment="Middle"/>
+                                    <textFieldExpression><![CDATA[$F{email}]]></textFieldExpression>
+                                </textField>
+                            </jr:detailCell>
+                        </jr:column>
+                        <jr:column width="105">
+                            <jr:columnHeader style="TableHeader" height="20">
+                                <box>
+                                    <pen lineWidth="0.5" lineColor="#CCCCCC"/>
+                                </box>
+                                <staticText>
+                                    <reportElement x="5" y="0" width="100" height="20"/>
+                                    <textElement verticalAlignment="Middle"/>
+                                    <text><![CDATA[Phone]]></text>
+                                </staticText>
+                            </jr:columnHeader>
+                            <jr:detailCell style="TableCell" height="20">
+                                <box>
+                                    <pen lineWidth="0.5" lineColor="#CCCCCC"/>
+                                </box>
+                                <textField>
+                                    <reportElement x="5" y="0" width="100" height="20"/>
+                                    <textElement verticalAlignment="Middle"/>
+                                    <textFieldExpression><![CDATA[$F{phone}]]></textFieldExpression>
+                                </textField>
+                            </jr:detailCell>
+                        </jr:column>
+                    </jr:table>
+                </componentElement>
+            </frame>
+        </band>
+    </detail>
+</jasperReport>

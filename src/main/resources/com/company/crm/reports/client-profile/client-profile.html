@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Client Profile</title>
+  <style>
+    :root { --fg: #222; --muted: #666; --accent: #0B69A3; --border: #e5e7eb; }
+    body { font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', Arial, sans-serif; color: var(--fg); margin: 24px; }
+    h1 { margin: 0 0 4px; font-size: 22px; }
+    .subtitle { color: var(--muted); font-size: 12px; margin-bottom: 20px; }
+    .section { margin-top: 22px; }
+    .section h2 { font-size: 16px; margin: 0 0 8px; color: var(--accent); }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid var(--border); padding: 8px 10px; font-size: 13px; vertical-align: top; }
+    th { background: #f8fafc; text-align: left; }
+    .empty { color: var(--muted); font-style: italic; padding: 6px 0; }
+    .kv { display: grid; grid-template-columns: 180px 1fr; gap: 6px 12px; }
+    .kv dt { color: var(--muted); }
+    .kv dd { margin: 0; }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <h1>Client Profile</h1>
+  <div class="subtitle">Generated: ${.now?string("yyyy-MM-dd HH:mm")}</div>
+
+  <#assign Client = Root.bands.Client[0]>
+  <#assign Contacts = Root.bands.Contacts>
+
+  <div class="section">
+    <h2>Summary</h2>
+    <dl class="kv">
+      <dt>Name</dt><dd>${Client.fields.name!}</dd>
+      <dt>Full name</dt><dd>${Client.fields.fullName!}</dd>
+      <dt>Type</dt><dd>${Client.fields.type!}</dd>
+      <dt>Address</dt><dd>${Client.fields.address!}</dd>
+      <dt>VAT number</dt><dd>${Client.fields.vatNumber!}</dd>
+      <dt>Registration number</dt><dd>${Client.fields.regNumber!}</dd>
+      <dt>Website</dt><dd>${(Client.fields.website)!}</dd>
+      <dt>Account manager</dt><dd>${(Client.fields.accountManager)!}</dd>
+    </dl>
+  </div>
+
+  <#if Contacts?has_content>
+    <div class="section">
+      <h2>Contacts</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Person</th>
+            <th>Position</th>
+            <th>Email</th>
+            <th>Phone</th>
+          </tr>
+        </thead>
+        <tbody>
+          <#list Contacts as c>
+            <tr>
+              <td>${c?index + 1}</td>
+              <td>${c.fields.person!}</td>
+              <td>${c.fields.position!}</td>
+              <td>${c.fields.email!}</td>
+              <td>${c.fields.phone!}</td>
+            </tr>
+          </#list>
+        </tbody>
+      </table>
+    </div>
+  </#if>
+</body>
+</html>

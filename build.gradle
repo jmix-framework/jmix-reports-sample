@@ -23,6 +23,9 @@ repositories {
 }
 
 dependencies {
+    implementation 'io.jmix.reports:jmix-reports-starter'
+    implementation 'io.jmix.reports:jmix-reports-flowui-starter'
+
     implementation 'io.jmix.core:jmix-core-starter'
     implementation 'io.jmix.data:jmix-eclipselink-starter'
     implementation 'io.jmix.security:jmix-security-starter'
