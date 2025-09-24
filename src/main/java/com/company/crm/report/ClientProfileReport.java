@@ -95,7 +95,7 @@ public class ClientProfileReport {
     @DataSetDelegate(name = "root")
     public ReportDataLoader rootDataLoader() {
         return (reportQuery, parentBand, params) ->
-                List.of(Map.of("generatedAt", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                List.of(Map.of("generatedAt", ReportUtils.formatDateTime(LocalDateTime.now(), "yyyy-MM-dd HH:mm:ss"))
         );
     }
 
