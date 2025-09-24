@@ -13,13 +13,8 @@ import io.jmix.reports.entity.ReportOutputType;
 import io.jmix.reports.yarg.loaders.ReportDataLoader;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.Temporal;
-import java.time.temporal.TemporalAccessor;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +23,7 @@ import java.util.Map;
         code = "orders-by-client",
         group = DesignTimeReportsGroup.class,
         name = "Orders by Client with Status Grouping",
+        description = "Multi-level tabular report with subtotals",
         uuid = "c8a32999-af6a-45c6-8704-2ccdcac6c953"
 )
 @AvailableForRoles(roleClasses = FullAccessRole.class)
@@ -36,7 +32,7 @@ import java.util.Map;
 @TemplateDef(
         isDefault = true,
         code = "DEFAULT",
-        filePath = "com/company/crm/reports/orders-by-client/orders-by-client-template.xlsx",
+        filePath = "com/company/crm/report/orders-by-client-report.xlsx",
         outputType = ReportOutputType.XLSX,
         outputNamePattern = "orders-by-client.xlsx"
 )
@@ -44,15 +40,13 @@ import java.util.Map;
 @InputParameterDef(
         alias = "dateFrom",
         name = "From",
-        type = ParameterType.DATE,
-        required = true
+        type = ParameterType.DATE
 )
 
 @InputParameterDef(
         alias = "dateTo",
         name = "To",
         type = ParameterType.DATE,
-        required = true,
         defaultDateIsCurrent = true
 )
 
@@ -97,14 +91,14 @@ import java.util.Map;
         dataSets = @DataSetDef(name = "grandTotal", type = DataSetType.DELEGATE)
 )
 
-public class OrdersByClient {
+public class OrdersByClientReport {
 
     private final DataManager dataManager;
 
     private final ThreadLocal<BigDecimal> runningClientTotal = ThreadLocal.withInitial(() -> BigDecimal.ZERO);
     private final ThreadLocal<BigDecimal> runningGrandTotal = ThreadLocal.withInitial(() -> BigDecimal.ZERO);
 
-    public OrdersByClient(DataManager dataManager) {
+    public OrdersByClientReport(DataManager dataManager) {
         this.dataManager = dataManager;
     }
 
@@ -123,10 +117,19 @@ public class OrdersByClient {
     @DataSetDelegate(name = "client")
     public ReportDataLoader clientDataLoader() {
         return (reportQuery, parentBand, params) -> {
+
+            // Initialize thread locals on report start
+            runningClientTotal.set(BigDecimal.ZERO);
+            runningGrandTotal.set(BigDecimal.ZERO);
+
             List<Client> clients = dataManager.load(Client.class)
                     .query("""
                             select c from Client c
-                            where exists (select 1 from Order_ o where o.client.id = c.id and o.date >= :dateFrom and o.date <= :dateTo)
+                            where exists (
+                                            select 1 from Order_ o where o.client.id = c.id and
+                                                (:dateFrom is null or o.date >= :dateFrom) and
+                                                (:dateTo is null or o.date <= :dateTo)
+                                         )
                             order by c.name""")
                     .parameter("dateFrom", params.get("dateFrom"))
                     .parameter("dateTo", params.get("dateTo"))
@@ -140,16 +143,18 @@ public class OrdersByClient {
     @DataSetDelegate(name = "orderStatus")
     public ReportDataLoader orderStatusDataLoader() {
         return (reportQuery, parentBand, params) -> {
-            return dataManager.loadValue("""
+            List<Integer> statusIdList = dataManager.loadValue("""
                                     select o.status from Order_ o
-                                    where o.client.id = :clientId and o.date >= :dateFrom and o.date <= :dateTo
+                                    where o.client.id = :clientId and
+                                        (:dateFrom is null or o.date >= :dateFrom) and
+                                        (:dateTo is null or o.date <= :dateTo)
                                     group by o.status order by o.status""",
                             Integer.class)
                     .parameter("clientId", parentBand.getData().get("id"))
                     .parameter("dateFrom", params.get("dateFrom"))
                     .parameter("dateTo", params.get("dateTo"))
-                    .list()
-                    .stream()
+                    .list();
+            return statusIdList.stream()
                     .map(statusId -> {
                         Map<String, Object> map = new HashMap<>();
                         map.put("statusId", statusId);
@@ -163,17 +168,19 @@ public class OrdersByClient {
     @DataSetDelegate(name = "order")
     public ReportDataLoader orderDataLoader() {
         return (reportQuery, parentBand, params) -> {
-            return dataManager.load(Order.class)
+            List<Order> orderList = dataManager.load(Order.class)
                     .query("""
                             select o from Order_ o
-                            where o.client.id = :clientId and o.status = :status and o.date >= :dateFrom and o.date <= :dateTo
+                            where o.client.id = :clientId and o.status = :status and
+                                (:dateFrom is null or o.date >= :dateFrom) and
+                                (:dateTo is null or o.date <= :dateTo)
                             order by o.date""")
                     .parameter("clientId", parentBand.getParentBand().getData().get("id"))
                     .parameter("status", parentBand.getData().get("statusId"))
                     .parameter("dateFrom", params.get("dateFrom"))
                     .parameter("dateTo", params.get("dateTo"))
-                    .list()
-                    .stream()
+                    .list();
+            return orderList.stream()
                     .map(order -> {
                         runningClientTotal.set(runningClientTotal.get().add(order.getTotal()));
                         Map<String, Object> map = new HashMap<>();
@@ -207,7 +214,9 @@ public class OrdersByClient {
             Map<String, Object> map = new HashMap<>();
             map.put("grandTotal", runningGrandTotal.get());
 
-            runningGrandTotal.set(BigDecimal.ZERO);
+            // Clean up thread locals on report finish
+            runningClientTotal.remove();
+            runningGrandTotal.remove();
 
             return List.of(map);
         };

@@ -13,7 +13,6 @@ import io.jmix.reports.entity.ReportOutputType;
 import io.jmix.reports.yarg.loaders.ReportDataLoader;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +22,7 @@ import java.util.stream.IntStream;
         code = "client-profile",
         group = DesignTimeReportsGroup.class,
         name = "Client Profile",
-        description = "A complete client info with contacts inlined",
+        description = "Simple report with different templates and output formats",
         uuid = "99d19247-7c18-4e02-8bf4-1dfcc80f826f"
 )
 @AvailableForRoles(roleClasses = FullAccessRole.class)
@@ -32,7 +31,7 @@ import java.util.stream.IntStream;
 @TemplateDef(
         isDefault = true,
         code = "HTML → HTML",
-        filePath = "com/company/crm/reports/client-profile/client-profile.html",
+        filePath = "com/company/crm/report/client-profile-report.html",
         outputType = ReportOutputType.HTML,
         outputNamePattern = "client-profile.html",
         templateEngine = TemplateMarkupEngine.FREEMARKER
@@ -40,21 +39,21 @@ import java.util.stream.IntStream;
 
 @TemplateDef(
         code = "DOCX → DOCX",
-        filePath = "com/company/crm/reports/client-profile/client-profile.docx",
+        filePath = "com/company/crm/report/client-profile-report.docx",
         outputType = ReportOutputType.DOCX,
         outputNamePattern = "client-profile.docs"
 )
 
 @TemplateDef(
         code = "DOCX → PDF",
-        filePath = "com/company/crm/reports/client-profile/client-profile.docx",
+        filePath = "com/company/crm/report/client-profile-report.docx",
         outputType = ReportOutputType.PDF,
         outputNamePattern = "client-profile.pdf"
 )
 
 @TemplateDef(
         code = "JRXML → PDF",
-        filePath = "com/company/crm/reports/client-profile/client-profile.jrxml",
+        filePath = "com/company/crm/report/client-profile-report.jrxml",
         outputType = ReportOutputType.PDF,
         outputNamePattern = "client-profile.pdf"
 )

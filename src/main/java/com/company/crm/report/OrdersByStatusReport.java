@@ -4,6 +4,7 @@ import com.company.crm.entity.OrderStatus;
 import com.company.crm.security.FullAccessRole;
 import com.company.crm.view.client.ClientDetailView;
 import io.jmix.core.DataManager;
+import io.jmix.core.entity.KeyValueEntity;
 import io.jmix.reports.annotation.*;
 import io.jmix.reports.entity.DataSetType;
 import io.jmix.reports.entity.ParameterType;
@@ -11,7 +12,6 @@ import io.jmix.reports.entity.ReportOutputType;
 import io.jmix.reports.yarg.loaders.ReportDataLoader;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +20,7 @@ import java.util.Map;
         code = "orders-by-status",
         group = DesignTimeReportsGroup.class,
         name = "Orders by Status",
-        description = "Sales Pipeline Snapshot",
+        description = "Tabular report with a chart",
         uuid = "dd0f6c44-c7c7-4374-a497-3b759b98921d"
 )
 @AvailableForRoles(roleClasses = FullAccessRole.class)
@@ -29,7 +29,7 @@ import java.util.Map;
 @TemplateDef(
         isDefault = true,
         code = "DEFAULT",
-        filePath = "com/company/crm/reports/orders-by-status/orders-by-status-template.xlsx",
+        filePath = "com/company/crm/report/orders-by-status-report.xlsx",
         outputType = ReportOutputType.XLSX,
         outputNamePattern = "orders-by-status.xlsx"
 )
@@ -37,15 +37,13 @@ import java.util.Map;
 @InputParameterDef(
         alias = "dateFrom",
         name = "From",
-        type = ParameterType.DATE,
-        required = true
+        type = ParameterType.DATE
 )
 
 @InputParameterDef(
         alias = "dateTo",
         name = "To",
         type = ParameterType.DATE,
-        required = true,
         defaultDateIsCurrent = true
 )
 
@@ -71,11 +69,11 @@ import java.util.Map;
         parent = "Root"
 )
 
-public class OrdersByStatus {
+public class OrdersByStatusReport {
 
     private final DataManager dataManager;
 
-    public OrdersByStatus(DataManager dataManager) {
+    public OrdersByStatusReport(DataManager dataManager) {
         this.dataManager = dataManager;
     }
 
@@ -94,15 +92,16 @@ public class OrdersByStatus {
     @DataSetDelegate(name = "orderStatus")
     public ReportDataLoader orderStatusDataLoader() {
         return (reportQuery, parentBand, params) -> {
-            return dataManager.loadValues("""
-                                    select o.status, count(o), sum(o.total) from Order_ o
-                                    where o.date >= :dateFrom and o.date <= :dateTo
-                                    group by o.status order by o.status""")
+            List<KeyValueEntity> keyValueEntities = dataManager.loadValues("""
+                            select o.status, count(o), sum(o.total) from Order_ o
+                            where (:dateFrom is null or o.date >= :dateFrom) and
+                                (:dateTo is null or o.date <= :dateTo)
+                            group by o.status order by o.status""")
                     .properties("statusId", "count", "total")
                     .parameter("dateFrom", params.get("dateFrom"))
                     .parameter("dateTo", params.get("dateTo"))
-                    .list()
-                    .stream()
+                    .list();
+            return keyValueEntities.stream()
                     .map(kve -> {
                         Map<String, Object> map = new HashMap<>();
                         map.put("status", OrderStatus.fromId(kve.getValue("statusId")));
