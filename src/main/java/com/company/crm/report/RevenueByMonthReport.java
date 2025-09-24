@@ -2,7 +2,10 @@ package com.company.crm.report;
 
 import com.company.crm.entity.Client;
 import com.company.crm.security.FullAccessRole;
+import com.company.crm.security.ManagerRole;
 import com.company.crm.view.client.ClientDetailView;
+import com.company.crm.view.client.ClientListView;
+import com.company.crm.view.payment.PaymentListView;
 import io.jmix.core.DataManager;
 import io.jmix.reports.annotation.*;
 import io.jmix.reports.delegate.ParameterValidator;
@@ -30,9 +33,9 @@ import static com.company.crm.report.ReportUtils.getParam;
         uuid = "c27da027-599f-4992-9a49-a4f2d187ecad"
 )
 
-@AvailableForRoles(roleClasses = FullAccessRole.class)
+@AvailableForRoles(roleClasses = {FullAccessRole.class, ManagerRole.class})
 
-@AvailableInViews(viewClasses = ClientDetailView.class)
+@AvailableInViews(viewClasses = {ClientListView.class, PaymentListView.class})
 
 @TemplateDef(
         isDefault = true,

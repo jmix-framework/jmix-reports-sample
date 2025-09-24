@@ -2,7 +2,10 @@ package com.company.crm.report;
 
 import com.company.crm.entity.OrderStatus;
 import com.company.crm.security.FullAccessRole;
+import com.company.crm.security.ManagerRole;
 import com.company.crm.view.client.ClientDetailView;
+import com.company.crm.view.client.ClientListView;
+import com.company.crm.view.order.OrderListView;
 import io.jmix.core.DataManager;
 import io.jmix.core.entity.KeyValueEntity;
 import io.jmix.reports.annotation.*;
@@ -23,8 +26,10 @@ import java.util.Map;
         description = "Tabular report with a chart",
         uuid = "dd0f6c44-c7c7-4374-a497-3b759b98921d"
 )
-@AvailableForRoles(roleClasses = FullAccessRole.class)
-@AvailableInViews(viewClasses = ClientDetailView.class)
+
+@AvailableForRoles(roleClasses = {FullAccessRole.class, ManagerRole.class})
+
+@AvailableInViews(viewClasses = {ClientListView.class, OrderListView.class})
 
 @TemplateDef(
         isDefault = true,

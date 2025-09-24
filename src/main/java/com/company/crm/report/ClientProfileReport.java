@@ -2,6 +2,7 @@ package com.company.crm.report;
 
 import com.company.crm.entity.Client;
 import com.company.crm.entity.Contact;
+import com.company.crm.security.EmployeeRole;
 import com.company.crm.security.FullAccessRole;
 import com.company.crm.view.client.ClientDetailView;
 import com.company.crm.view.client.ClientListView;
@@ -25,7 +26,9 @@ import java.util.stream.IntStream;
         description = "Simple report with different templates and output formats",
         uuid = "99d19247-7c18-4e02-8bf4-1dfcc80f826f"
 )
-@AvailableForRoles(roleClasses = FullAccessRole.class)
+
+@AvailableForRoles(roleClasses = {FullAccessRole.class, EmployeeRole.class})
+
 @AvailableInViews(viewClasses = {ClientDetailView.class, ClientListView.class})
 
 @TemplateDef(

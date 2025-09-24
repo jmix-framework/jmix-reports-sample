@@ -36,6 +36,7 @@
             <button id="createButton" action="ordersDataGrid.createAction"/>
             <button id="editButton" action="ordersDataGrid.editAction"/>
             <button id="removeButton" action="ordersDataGrid.removeAction"/>
+            <button action="ordersDataGrid.runReportAction"/>
             <simplePagination id="pagination" dataLoader="ordersDl"/>
         </hbox>
         <dataGrid id="ordersDataGrid"
@@ -47,6 +48,7 @@
                 <action id="createAction" type="list_create"/>
                 <action id="editAction" type="list_edit"/>
                 <action id="removeAction" type="list_remove"/>
+                <action id="runReportAction" type="report_runReport" text="Reports" icon="vaadin:table"/>
             </actions>
             <columns resizable="true">
                 <column property="client"/>

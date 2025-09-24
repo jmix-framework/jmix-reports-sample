@@ -36,6 +36,12 @@
             <button id="createButton" action="clientsDataGrid.createAction"/>
             <button id="editButton" action="clientsDataGrid.editAction"/>
             <button id="removeButton" action="clientsDataGrid.removeAction"/>
+            <comboButton text="Reports">
+                <items>
+                    <actionItem id="reportForEntityActionItem" ref="clientsDataGrid.runListEntityReportAction"/>
+                    <actionItem id="reportActionItem" ref="clientsDataGrid.runReportAction"/>
+                </items>
+            </comboButton>
             <simplePagination id="pagination" dataLoader="clientsDl"/>
         </hbox>
         <dataGrid id="clientsDataGrid"
@@ -47,6 +53,8 @@
                 <action id="createAction" type="list_create"/>
                 <action id="editAction" type="list_edit"/>
                 <action id="removeAction" type="list_remove"/>
+                <action id="runListEntityReportAction" type="report_runListEntityReport" text="Reports for entity"/>
+                <action id="runReportAction" type="report_runReport" text="Reports" icon="vaadin:table"/>
             </actions>
             <columns resizable="true">
                 <column property="name"/>

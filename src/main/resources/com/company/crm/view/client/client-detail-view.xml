@@ -19,6 +19,7 @@
     <actions>
         <action id="saveAction" type="detail_saveClose"/>
         <action id="closeAction" type="detail_close"/>
+        <action id="runSingleEntityReportAction" type="report_runSingleEntityReport" text="Reports for entity"/>
     </actions>
     <layout>
         <tabSheet width="100%">
@@ -79,6 +80,8 @@
         <hbox id="detailActions">
             <button id="saveAndCloseButton" action="saveAction"/>
             <button id="closeButton" action="closeAction"/>
+            <button action="runSingleEntityReportAction"/>
+            <button id="printClientProfileButton" text="Print client profile" icon="vaadin:file-text"/>
         </hbox>
     </layout>
 </view>

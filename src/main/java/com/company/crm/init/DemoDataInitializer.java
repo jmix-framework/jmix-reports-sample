@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
@@ -113,21 +114,13 @@ public class DemoDataInitializer {
 
     private void assignRoles(List<User> users) {
         for (User user : users) {
-//            boolean isManager = Arrays.asList("alice", "james").contains(user.getUsername());
+            boolean isManager = Arrays.asList("alice", "james").contains(user.getUsername());
 
-            RoleAssignmentEntity roleAssignment;
-
-            roleAssignment = dataManager.create(RoleAssignmentEntity.class);
+            RoleAssignmentEntity roleAssignment = dataManager.create(RoleAssignmentEntity.class);
             roleAssignment.setUsername(user.getUsername());
-            roleAssignment.setRoleCode("ui-minimal");
+            roleAssignment.setRoleCode(isManager? "manager" : "employee");
             roleAssignment.setRoleType(RoleAssignmentRoleType.RESOURCE);
             dataManager.save(roleAssignment);
-
-//            roleAssignment = dataManager.create(RoleAssignmentEntity.class);
-//            roleAssignment.setUsername(user.getUsername());
-//            roleAssignment.setRoleCode(isManager ? "manager" : "employee");
-//            roleAssignment.setRoleType(RoleAssignmentRoleType.RESOURCE);
-//            dataManager.save(roleAssignment);
         }
     }
 

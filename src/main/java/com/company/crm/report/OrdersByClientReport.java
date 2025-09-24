@@ -4,7 +4,9 @@ import com.company.crm.entity.Client;
 import com.company.crm.entity.Order;
 import com.company.crm.entity.OrderStatus;
 import com.company.crm.security.FullAccessRole;
+import com.company.crm.security.ManagerRole;
 import com.company.crm.view.client.ClientListView;
+import com.company.crm.view.order.OrderListView;
 import io.jmix.core.DataManager;
 import io.jmix.reports.annotation.*;
 import io.jmix.reports.entity.DataSetType;
@@ -26,8 +28,10 @@ import java.util.Map;
         description = "Multi-level tabular report with subtotals",
         uuid = "c8a32999-af6a-45c6-8704-2ccdcac6c953"
 )
-@AvailableForRoles(roleClasses = FullAccessRole.class)
-@AvailableInViews(viewClasses = ClientListView.class)
+
+@AvailableForRoles(roleClasses = {FullAccessRole.class, ManagerRole.class})
+
+@AvailableInViews(viewClasses = {ClientListView.class, OrderListView.class})
 
 @TemplateDef(
         isDefault = true,
