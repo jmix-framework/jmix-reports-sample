@@ -3,7 +3,6 @@ package com.company.crm.report;
 import com.company.crm.entity.Client;
 import com.company.crm.security.FullAccessRole;
 import com.company.crm.security.ManagerRole;
-import com.company.crm.view.client.ClientDetailView;
 import com.company.crm.view.client.ClientListView;
 import com.company.crm.view.payment.PaymentListView;
 import io.jmix.core.DataManager;
@@ -68,11 +67,6 @@ import static com.company.crm.report.ReportUtils.getParam;
         name = "Header",
         parent = "Root",
         dataSets = @DataSetDef(name = "header", type = DataSetType.DELEGATE)
-)
-
-@BandDef(
-        name = "CrossTabHeader",
-        parent = "Root"
 )
 
 @BandDef(

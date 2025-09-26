@@ -44,7 +44,7 @@ import java.util.stream.IntStream;
         code = "DOCX → DOCX",
         filePath = "com/company/crm/report/client-profile-report.docx",
         outputType = ReportOutputType.DOCX,
-        outputNamePattern = "client-profile.docs"
+        outputNamePattern = "client-profile.docx"
 )
 
 @TemplateDef(
