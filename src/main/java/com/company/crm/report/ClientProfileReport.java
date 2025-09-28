@@ -4,6 +4,7 @@ import com.company.crm.entity.Client;
 import com.company.crm.entity.Contact;
 import com.company.crm.security.EmployeeRole;
 import com.company.crm.security.FullAccessRole;
+import com.company.crm.security.ManagerRole;
 import com.company.crm.view.client.ClientDetailView;
 import com.company.crm.view.client.ClientListView;
 import io.jmix.core.MetadataTools;
@@ -27,7 +28,7 @@ import java.util.stream.IntStream;
         uuid = "99d19247-7c18-4e02-8bf4-1dfcc80f826f"
 )
 
-@AvailableForRoles(roleClasses = {FullAccessRole.class, EmployeeRole.class})
+@AvailableForRoles(roleClasses = {FullAccessRole.class, EmployeeRole.class, ManagerRole.class})
 
 @AvailableInViews(viewClasses = {ClientDetailView.class, ClientListView.class})
 
