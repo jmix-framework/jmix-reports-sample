@@ -1,0 +1,238 @@
+:sample-project: jmix-reports-sample
+
+= Report Generation
+
+[[requirements]]
+== Requirements
+
+To effectively use this guide, you will need the following:
+
+. xref:ROOT:setup.adoc[Setup] the development environment.
+
+. Clone the https://github.com/jmix-framework/{sample-project}[sample project^] and switch to `{page-origin-branch}` branch:
++
+[source,subs=attributes+]
+----
+git clone https://github.com/jmix-framework/{sample-project}
+cd {sample-project}
+git checkout {page-origin-branch}
+----
+
+[[application-overview]]
+== Application Overview
+
+The example application used in this guide is a simple CRM system with the data model illustrated by the following diagram:
+
+.Application Data Model
+image::er-model.svg[]
+
+* `Client` - represents customers with the main information and a collection of contacts. The `ClientType` enumeration defines classification categories for clients.
+
+* `Contact` - stores customer contact details.
+
+* `Order` - customer orders with status tracking. The `OrderStatus` enumeration defines values for order lifecycle management.
+
+* `Invoice` - billing documents associated with orders. The `InvoiceStatus` enumeration defines status values for invoice processing.
+
+* `Payment` - payment records.
+
+The application includes standard CRUD views that let you browse through the demo data.
+
+The main purpose of the application is to show how to develop and run various types of reports, so it doesn't contain any specific business logic.
+
+[[setup-and-running]]
+== Setup and Running
+
+Open the root project in IntelliJ IDEA with the Jmix Studio plugin installed. Run the application using the `Jmix-reports-sample Jmix Application` run/debug configuration. Go to http://localhost:8080[^] in your web browser and log in as `admin` with `admin` password.
+
+The demo data include the `alice`, `bob` and other users. All of them have password `1`.
+
+You can open the *Clients*, *Orders*, *Invoices*, *Payments* and *Users* views to see demo data automatically generated on first launch.
+
+Click *Reports -> Reports* in the main menu. You will see the list of all reports available in the application.
+
+image::all-reports.png[link="_images/all-reports.png"]
+
+Reports in the `Design Time Reports` group are defined in the application code and cannot be edited at runtime.
+
+Reports in the `Runtime Reports` group duplicate the design-time reports. They use the same templates and produce identical results. The only difference is that their structure and template content are stored in the database, so you can explore and edit them in the running application by clicking *Edit*.
+
+[[exploring-reports]]
+== Exploring Reports
+
+[[client-profile]]
+=== Client Profile
+
+This report provides complete information about a client, including the list of contacts. It has a master-detail structure and offers multiple templates and output formats.
+
+[[client-profile-running-from-report-designer]]
+==== Running from Report Designer
+
+Select the `Client Profile` report in the data grid and click the *Run* button.
+
+The *Input parameters* dialog allows you to choose a template and select a client entity for which you want to generate the report.
+
+image::client-profile-1.png[link="_images/client-profile-1.png"]
+
+The template defines both the source template file and the output type. For example, you can have a DOCX template and output the resulting report as a PDF file.
+
+Select one of the templates and a client and click *Run*. The application will generate the report and either open the result in a new browser tab or download it as a file, depending on the output type.
+
+For example, this is how the report result looks in the DOCX format:
+
+image::client-profile-2.png[link="_images/client-profile-2.png"]
+
+[[client-profile-running-from-application-views]]
+==== Running from Application Views
+
+Users can run the `Client Profile` report from the *Reports -> Run report* view and some other application views as well.
+
+Log out from the application and log in as `bob` with password `1`. You now have limited access defined by the `Employee` role. This role grants permissions on the *Reports -> Run report* view and list and detail views of the `Client` entity.
+
+If you open the *Reports -> Run report* view, you will see only the `Client Profile` report and its runtime clone.
+
+Open the *Clients* list view. Select a client in the data grid, click *Reports* dropdown and then select *Reports for entity*:
+
+image::client-profile-3.png[width="734",link="_images/client-profile-3.png"]
+
+The *Client* field of the *Input parameters* dialog will be set to the client selected in the data grid.
+
+If you open the client detail view, you will see two additional buttons at the bottom: *Reports for entity* and *Print client profile*:
+
+image::client-profile-4.png[width="625",link="_images/client-profile-4.png"]
+
+The *Reports for entity* button allows you to select a template and a client the same as in the list view. The *Print client profile* button just prints the report right away for the edited entity using the HTML template and HTML output:
+
+image::client-profile-5.png[link="_images/client-profile-5.png"]
+
+[[orders-by-client]]
+=== Orders by Client
+
+This is a multi-level tabular report with subtotals. It shows all orders, grouped by client and status.
+
+The report is available for `admin` and for `alice` who has the `Manager` role.
+
+Log in as `alice` with password `1` and open the *Reports -> Run report* view. Select the `Orders by Client` report and click *Run*.
+
+In the *Input parameters* dialog, select the *From* and *To* dates to take into account only orders within a specific range. Both dates are optional, so if you leave them blank, all orders will be included in the report.
+
+This report is developed for a single XLSX template, so the dialog does not allow you to select a template.
+
+The resulting report looks as follows (most of the rows are hidden manually to show the totals):
+
+image::orders-by-client-1.png[link="_images/orders-by-client-1.png"]
+
+The report can also be generated by a user with `Manager` role from the *Clients* and *Orders* list views using the *Reports* button.
+
+[[orders-by-status]]
+=== Orders by Status
+
+This is a tabular report with a chart. It shows a high-level sales pipeline: count and sum of orders per status in a period.
+
+The report is similar to <<orders-by-client,Orders by Client>> in the following:
+
+* available to the `Manager` role;
+* accepts an optional range of dates;
+* has a single XLSX template;
+* can be generated from the *Clients* and *Orders* list views.
+
+Log in as `alice` with password `1` and open the *Reports -> Run report* view. Select the `Orders by Status` report and click *Run*.
+
+The resulting report looks as follows:
+
+image::orders-by-status-1.png[link="_images/orders-by-status-1.png"]
+
+[[revenue-by-month]]
+=== Revenue by Month
+
+This is a cross-tab report that shows monthly total payments by client.
+
+Cross-tab means that the number of columns in the report is dynamic, just like the rows, and each intersection, or cell, shows the result of aggregation based on the row and column.
+
+Log in as `alice` with password `1` and open the *Reports -> Run report* view. Select the `Revenue by Month` report and click *Run*.
+
+In the *Input parameters* dialog, the *From* and *To* dates are required. Moreover, the user must select the start a month in *From* and the end of a month in *To*. Also, the application checks that the *From* date is before the *To* date. These constraints help to avoid uncertainty when interpreting the report data, because the report is calculated for entire months.
+
+The resulting report looks as follows:
+
+image::revenue-by-month-1.png[link="_images/revenue-by-month-1.png"]
+
+The report can also be generated from the *Clients* and *Payments* list views using the *Reports* button.
+
+[[project-configuration]]
+== Project Configuration
+
+The application project includes the xref:reports:index.adoc[] add-on.
+
+To convert resulting documents from office formats (DOCX, XLSX) to PDF, the application uses the locally installed LibreOffice. This is defined by the following properties:
+
+[source,properties]
+.application.properties
+----
+include::example$src/main/resources/application.properties[tags=office]
+----
+
+== Templates
+
+Templates of the design-time reports are located in the `src/main/resources/com/company/crm/report` directory. They are loaded by the report generator from the application resources.
+
+Templates of the runtime reports are stored in the database together with the report structure. In this sample application, the runtime templates are identical to the design-time ones.
+
+=== HTML Template
+
+One of the <<client-profile,Client Profile>> report templates is written in HTML. You can download the whole file from https://github.com/jmix-framework/jmix-reports-sample/blob/{page-origin-branch}/src/main/resources/com/company/crm/report/client-profile-report.html[GitHub^].
+
+The template is a standard HTML file with added https://freemarker.apache.org/docs/index.html[Freemarker^] directives to populate with data when the report is executed.
+
+Let's consider the template body:
+
+[source,html,indent=0]
+----
+include::example$src/main/resources/com/company/crm/report/client-profile-report.html[tags=body]
+----
+<1> Using the Freemarker special variable `.now` to print the current timestamp.
+<2> Assigning the first row of the `Client` band to the `Client` variable.
+<3> Assigning the rows of the `Contacts` band to the `Contacts` variable.
+<4> Printing the `Client` fields.
+<5> Iterating over the `Contacts` list.
+<6> Using the Freemarker loop variable to print the item number.
+<7> Printing the `Contacts` fields.
+
+=== DOCX Template
+
+Another <<client-profile,Client Profile>> report template is a DOCX file. You can download it from https://github.com/jmix-framework/jmix-reports-sample/blob/{page-origin-branch}/src/main/resources/com/company/crm/report/client-profile-report.docx[GitHub^].
+
+The DOCX template is populated with data using the `${band_name.field_name}` placeholders and defining band names in the tables.
+
+image::template-docx-1.png[width="717",link="_images/template-docx-1.png"]
+
+1. The report timestamp is printed as a regular field of the `Root` band.
+2. Printing the `Client` band fields.
+3. The `##band==<band_name>` directive in a table cell defines a band for the table.
+4. The item number is printed as a regular field of the `Contacts` band.
+5. Printing the `Contacts` band fields.
+
+=== JRXML Template
+
+The JRXML template of the <<client-profile,Client Profile>> report is rendered using https://github.com/Jaspersoft/jasperreports[JasperReports^] library to produce a PDF file. You can download the template from https://github.com/jmix-framework/jmix-reports-sample/blob/{page-origin-branch}/src/main/resources/com/company/crm/report/client-profile-report.jrxml[GitHub^].
+
+// [source,html,indent=0]
+// ----
+// include::example$src/main/resources/com/company/crm/report/client-profile-report.jrxml[]
+// ----
+
+=== XLSX Template
+
+XLSX templates are used for all tabular reports of this guide: <<orders-by-client>>, <<orders-by-status>> and <<revenue-by-month>>.
+
+
+
+== Defining Report Structure in Code
+
+== Defining Report Structure at Runtime
+
+== Access Control
+
+== Running from Views
+
+== Summary

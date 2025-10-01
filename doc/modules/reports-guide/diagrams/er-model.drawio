@@ -1,0 +1,58 @@
+<mxfile host="Electron" modified="2025-09-26T15:04:01.442Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.8.2 Chrome/114.0.5735.289 Electron/25.8.1 Safari/537.36" etag="f1wXl2sx09XOI5u69-b8" version="21.8.2" type="device">
+  <diagram name="entities" id="LOwwp7m-KBkjHdOaFRbJ">
+    <mxGraphModel dx="1514" dy="1279" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="bbY-LNTelDIaiRr3qQsm-1" value="Client" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="-53" y="-30" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="bbY-LNTelDIaiRr3qQsm-2" value="Contact" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="-226" y="-30" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="bbY-LNTelDIaiRr3qQsm-3" value="Order" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="120" y="-30" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="bbY-LNTelDIaiRr3qQsm-4" value="Invoice" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="118" y="78" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="bbY-LNTelDIaiRr3qQsm-5" value="Payment" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="118" y="186" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="bbY-LNTelDIaiRr3qQsm-6" value="" style="endArrow=diamondThin;html=1;rounded=0;fontSize=12;startSize=8;endSize=8;curved=1;startArrow=ERmany;startFill=0;endFill=1;fillColor=#f5f5f5;strokeColor=#666666;" edge="1" parent="1" source="bbY-LNTelDIaiRr3qQsm-2" target="bbY-LNTelDIaiRr3qQsm-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-105" y="276" as="sourcePoint" />
+            <mxPoint x="-55" y="226" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bbY-LNTelDIaiRr3qQsm-7" value="" style="endArrow=ERmany;html=1;rounded=0;fontSize=12;startSize=8;endSize=8;curved=1;startArrow=none;startFill=0;endFill=0;fillColor=#f5f5f5;strokeColor=#666666;" edge="1" parent="1" source="bbY-LNTelDIaiRr3qQsm-1" target="bbY-LNTelDIaiRr3qQsm-3">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="82" y="-77" as="sourcePoint" />
+            <mxPoint x="132" y="-127" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bbY-LNTelDIaiRr3qQsm-8" value="" style="endArrow=ERmany;html=1;rounded=0;fontSize=12;startSize=8;endSize=8;curved=1;startArrow=none;startFill=0;endFill=0;fillColor=#f5f5f5;strokeColor=#666666;" edge="1" parent="1" source="bbY-LNTelDIaiRr3qQsm-3" target="bbY-LNTelDIaiRr3qQsm-4">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="12" y="59" as="sourcePoint" />
+            <mxPoint x="138" y="59" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bbY-LNTelDIaiRr3qQsm-9" value="" style="endArrow=ERmany;html=1;rounded=0;fontSize=12;startSize=8;endSize=8;curved=1;startArrow=none;startFill=0;endFill=0;fillColor=#f5f5f5;strokeColor=#666666;" edge="1" parent="1" source="bbY-LNTelDIaiRr3qQsm-4" target="bbY-LNTelDIaiRr3qQsm-5">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="336" y="158" as="sourcePoint" />
+            <mxPoint x="336" y="231" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bbY-LNTelDIaiRr3qQsm-10" value="" style="endArrow=ERmany;html=1;rounded=0;fontSize=12;startSize=8;endSize=8;curved=1;startArrow=none;startFill=0;endFill=0;fillColor=#f5f5f5;strokeColor=#666666;" edge="1" parent="1" source="bbY-LNTelDIaiRr3qQsm-1" target="bbY-LNTelDIaiRr3qQsm-4">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="50" y="78" as="sourcePoint" />
+            <mxPoint x="50" y="151" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="31" y="120" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
