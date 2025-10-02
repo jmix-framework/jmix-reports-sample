@@ -20,13 +20,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
+// tag::report-def[]
 @ReportDef(
-        code = "client-profile",
-        group = DesignTimeReportsGroup.class,
-        name = "Client Profile",
-        description = "Simple report with different templates and output formats",
-        uuid = "99d19247-7c18-4e02-8bf4-1dfcc80f826f"
+        code = "client-profile", // <1>
+        group = DesignTimeReportsGroup.class, // <2>
+        name = "Client Profile", // <3>
+        description = "Simple report with different templates and output formats" // <4>
 )
+// end::report-def[]
 
 @AvailableForRoles(roleClasses = {FullAccessRole.class, EmployeeRole.class, ManagerRole.class})
 
@@ -87,7 +88,9 @@ import java.util.stream.IntStream;
         parent = "Root",
         dataSets = @DataSetDef(name = "contacts", type = DataSetType.DELEGATE)
 )
+// tag::report-class[]
 public class ClientProfileReport {
+// end::report-class[]
 
     private final MetadataTools metadataTools;
 
@@ -137,4 +140,6 @@ public class ClientProfileReport {
                     .toList();
         };
     }
+// tag::report-class[]
 }
+// end::report-class[]
