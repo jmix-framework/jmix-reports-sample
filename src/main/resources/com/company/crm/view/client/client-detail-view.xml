@@ -16,12 +16,18 @@
     <facets>
         <dataLoadCoordinator auto="true"/>
     </facets>
+    <!-- tag::report-actions[] -->
     <actions>
+        <!-- ... -->
+        <!-- end::report-actions[] -->
         <action id="saveAction" type="detail_saveClose"/>
         <action id="closeAction" type="detail_close"/>
-        <action id="runSingleEntityReportAction" type="report_runSingleEntityReport" text="Reports for entity"/>
+        <!-- tag::report-actions[] -->
+        <action id="runSingleEntityReportAction" text="Reports for entity"
+                type="report_runSingleEntityReport"/> <!--1-->
     </actions>
     <layout>
+        <!-- end::report-actions[] -->
         <tabSheet width="100%">
             <tab id="infoTab" label="Info">
                 <formLayout id="form" dataContainer="clientDc">
@@ -77,11 +83,14 @@
                 </vbox>
             </tab>
         </tabSheet>
+        <!-- tag::report-actions[] -->
         <hbox id="detailActions">
             <button id="saveAndCloseButton" action="saveAction"/>
             <button id="closeButton" action="closeAction"/>
-            <button action="runSingleEntityReportAction"/>
-            <button id="printClientProfileButton" text="Print client profile" icon="vaadin:file-text"/>
+            <button action="runSingleEntityReportAction"/> <!--1-->
+            <button id="printClientProfileButton" text="Print client profile"
+                    icon="vaadin:file-text"/> <!--2-->
         </hbox>
     </layout>
+    <!-- end::report-actions[] -->
 </view>

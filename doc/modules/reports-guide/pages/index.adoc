@@ -2,6 +2,12 @@
 
 = Report Generation
 
+The xref:reports:index.adoc[Jmix Reports] add-on allows developers to create dynamic, data-driven reports directly within Jmix applications, supporting a variety of templates and output formats.
+
+This guide demonstrates the add-on's core functionality through practical examples in a sample CRM application, showcasing report design at both design-time (via Java annotations) and runtime (via database-stored definitions editable in the UI).
+
+You'll learn how to structure reports with bands and datasets, handle input parameters and validations, integrate charts and cross-tabs, and embed report actions into application views.
+
 [[requirements]]
 == Requirements
 
@@ -36,14 +42,11 @@ image::er-model.svg[]
 
 * `Payment` - payment records.
 
-The application includes standard CRUD views that let you browse through the demo data.
-
 The main purpose of the application is to show how to develop and run various types of reports, so it doesn't contain any specific business logic.
 
-[[setup-and-running]]
-== Setup and Running
+Let's explore the application features.
 
-Open the root project in IntelliJ IDEA with the Jmix Studio plugin installed. Run the application using the `Jmix-reports-sample Jmix Application` run/debug configuration. Go to http://localhost:8080[^] in your web browser and log in as `admin` with `admin` password.
+Open the project in your IDE with the Jmix Studio plugin installed. Run the application using the `Jmix-reports-sample Jmix Application` run/debug configuration. Go to http://localhost:8080[^] in your web browser and log in as `admin` with `admin` password.
 
 The demo data includes the users `alice`, `bob`, and others. All of them have the password `1`.
 
@@ -58,7 +61,7 @@ Reports in the `Design Time Reports` group are defined in the application code a
 Reports in the `Runtime Reports` group duplicate the design-time reports. They use the same templates and produce identical results. The only difference is that their structure and template content are stored in the database, so you can explore and edit them in the running application by clicking *Edit*.
 
 [[client-profile]]
-== Client Profile
+== Client Profile Report
 
 This report provides complete information about a client, including the list of contacts. It has a master-detail structure and offers multiple templates and output formats.
 
@@ -138,7 +141,7 @@ include::example$src/main/resources/com/company/crm/report/client-profile-report
 [[client-profile-docx-template]]
 === DOCX Template
 
-Another <<client-profile,Client Profile>> report template is a DOCX file. You can download it from https://github.com/jmix-framework/jmix-reports-sample/blob/{page-origin-branch}/src/main/resources/com/company/crm/report/client-profile-report.docx[GitHub^].
+Another `Client Profile` report template is a DOCX file. You can download it from https://github.com/jmix-framework/jmix-reports-sample/blob/{page-origin-branch}/src/main/resources/com/company/crm/report/client-profile-report.docx[GitHub^].
 
 The DOCX template is populated with data using the `${band_name.field_name}` placeholders and defining band names in the tables.
 
@@ -163,11 +166,161 @@ The JRXML template of the <<client-profile,Client Profile>> report is rendered u
 [[client-profile-design-time]]
 === Design-Time Definition
 
+The `Client Profile` report structure is defined by the `com.company.crm.report.ClientProfileReport` class.
+
+Below we describe the key elements of the class, its annotations and methods.
+
+==== @ReportDef
+
+The `@ReportDef` annotation is a mandatory element of a report definition:
+
+[source,java,indent=0]
+----
+include::example$src/main/java/com/company/crm/report/ClientProfileReport.java[tags=report-def;report-class]
+----
+<1> Report code is used to identify the report when running it through the API.
+<2> Report group definition class.
+<3> Report name and description to display in UI.
+
+The `@ReportDef` annotation is itself annotated with Spring's `@Component`, so the report definition class becomes a singleton bean.
+
+==== @AvailableForRoles and @AvailableInViews
+
+The `@AvailableForRoles` and `@AvailableInViews` specify the user roles that are permitted to run the report and indicate the views in which the report generation actions will show the report:
+
+[source,java,indent=0]
+----
+include::example$src/main/java/com/company/crm/report/ClientProfileReport.java[tags=availability;report-class]
+----
+
+==== @TemplateDef
+
+The `@TemplateDef` annotation defines the report template:
+
+[source,java,indent=0]
+----
+include::example$src/main/java/com/company/crm/report/ClientProfileReport.java[tags=template-def;report-class]
+----
+<1> Indicates that the template should be automatically used unless user explicitly specifies another one.
+<2> The unique template code is shown to the user and can be used when referring to the template in API.
+<3> Path to the template file starting from the resources root.
+<4> Type of the output content generated by the reporting engine. Output type should be consistent with the template file type.
+<5> Optional file name pattern which will be used to generate the output file name.
+<6> For HTML templates, defines the template engine to process the content.
+
+A report may contain multiple `@TemplateDef` annotations. When the report is executed, one template is either selected by the user or chosen automatically.
+
+==== @InputParameterDef
+
+The `@InputParameterDef` annotation defines an external parameter passed to the report:
+
+[source,java,indent=0]
+----
+include::example$src/main/java/com/company/crm/report/ClientProfileReport.java[tags=input-param-def;report-class]
+----
+<1> Unique alias to access parameter in datasets.
+<2> Human-readable parameter name. Can be a string or a reference to a localized message.
+<3> Data type of the parameter.
+<4> Whether the parameter is mandatory and must be entered by the user or passed through the API.
+<5> For `ParameterType.ENTITY` and `ParameterType.ENTITY_LIST` parameters, defines additional properties.
+
+A report may contain multiple `@InputParameterDef` annotations.
+
+==== @BandDef and @DataSetDef
+
+[source,java,indent=0]
+----
+include::example$src/main/java/com/company/crm/report/ClientProfileReport.java[tags=band-def;report-class]
+----
+<1> The unique band name. Any report must include the band named `Root` with the annotation attribute `root = true`.
+<2> The `dataSets` attribute defines one or more datasets for this band using the `@DataSetDef` annotation.
+<3> The dataset name to refer from a delegate method.
+<4> Dataset type determines how the band data is obtained. `DataSetType.DELEGATE` means delegation to a `ReportDataLoader` object returned by a report class method.
+<5> The `parent` attribute specifies a parent band to define the report structure.
+
+[[client-profile-delegates]]
+==== Delegate Methods
+
+The report class can contain delegate methods that are invoked by the report engine when running the report.
+
+The most common delegates are used for loading data in band datasets. Methods of this kind are annotated with `@DataSetDelegate`:
+
+[source,java,indent=0]
+----
+include::example$src/main/java/com/company/crm/report/ClientProfileReport.java[tags=report-class;client-data-loader]
+----
+<1> The `name` attribute links the method to the dataset (`client` in this example).
+<2> The method returns the `ReportDataLoader` object and does not have any arguments.
+
+`ReportDataLoader` is a functional interface that accepts a parent band and external parameters map. It returns a list of fields that becomes the band content.
+
 [[client-profile-runtime]]
 === Runtime Definition
 
+The sample project includes the copy of the `Client Profile` report, defined in the database. This "runtime" report produces the same result as the one defined at design time.
+
+Run the application and open *Reports -> Reports* view. Select `Client Profile (runtime)` in the list and click *Edit*. You will see the modifiable report properties defined on several tabs: *Report details*, *Bands*, *Parameters*, and so on.
+
+The *Bands* tab defines the structure of bands and datasets:
+
+image::client-profile-runtime-1.png[link="_images/client-profile-runtime-1.png"]
+
+The same logic as that in the <<client-profile-delegates,clientDataLoader()>> delegate is implemented here using the Groovy script:
+
+[source,groovy]
+----
+def metadataTools = applicationContext.getBean(io.jmix.core.MetadataTools)
+
+def client = params['client']
+
+return [[
+    'name': client.name,
+    'fullName': client.fullName,
+    'type': client.type.name(),
+    'address': client.address,
+    'vatNumber': client.vatNumber,
+    'regNumber': client.regNumber,
+    'website': client.website,
+    'accountManager': client.accountManager ? metadataTools.getInstanceName(client.accountManager) : ''
+    ]]
+----
+
+Templates are listed on the *Templates* tab:
+
+image::client-profile-runtime-2.png[link="_images/client-profile-runtime-2.png"]
+
+In runtime reports, templates are uploaded to the application and stored in the database.
+
+[[report-actions-in-views]]
+=== Report Actions in Views
+
+The `Client Profile` report is available to the users through the actions defined in the application views. The actions are provided by the Reports add-on.
+
+[source,xml,indent=0]
+.client-list-view.xml
+----
+include::example$src/main/resources/com/company/crm/view/client/client-list-view.xml[tags=report-actions]
+----
+<1> Action with the `report_runListEntityReport` type shows available reports that have an external parameter of the `Entity` or the `List of entities` type and where the parameter entity type matches the entity displayed by the `dataGrid`. If an entity is selected in the `dataGrid`, it is automatically set as the parameter value.
+<2> Action with the `report_runReport` type shows all reports available to the user in this view.
+
+[source,xml,indent=0]
+.client-detail-view.xml
+----
+include::example$src/main/resources/com/company/crm/view/client/client-detail-view.xml[tags=report-actions]
+----
+<1> Action with the `report_runSingleEntityReport` type shows available reports that have an external parameter of the `Entity` or the `List of entities` type and where the parameter entity type matches the entity displayed in this detail view.
+<2> The button executes the `Client Profile` report using the custom handler in `ClientDetailView` shown below.
+
+[source,java,indent=0]
+.ClientDetailView.java
+----
+include::example$src/main/java/com/company/crm/view/client/ClientDetailView.java[tags=report-actions]
+----
+<1> The `UiReportRunner` bean provides fluent API to execute reports in UI.
+
 [[orders-by-client]]
-== Orders by Client
+== Orders by Client Report
 
 This is a multi-level tabular report with subtotals. It shows all orders, grouped by client and status.
 
@@ -213,7 +366,6 @@ The `ClientTotal` band is printed for each client.
 
 The `GrandTotal` band is printed once in the report footer.
 
-
 [[orders-by-client-xlsx-template]]
 === XLSX Template
 
@@ -228,12 +380,57 @@ Bands are populated with data using the `$\{field_name}` placeholders.
 [[orders-by-client-design-time]]
 === Design-Time Definition
 
+The `Orders by Client` report structure is defined by the `com.company.crm.report.OrdersByClientReport` class.
+
+Below we outline only elements that are substantially different from the <<client-profile-design-time,Client Profile report definition>>.
+
+[source,java,indent=0]
+----
+include::example$src/main/java/com/company/crm/report/OrdersByClientReport.java[tags=report-class;data-loading]
+----
+<1> Thread-local variables are used to store intermediate values during the report execution.
+<2> `DataManager` is used to load data.
+<3> `parentBand` argument is used to get fields of the upper-level bands and use them as parameters for this band's dataset query.
+<4> `runningClientTotal` is increased by the amount of the order printed in the current band iteration.
+<5> Accumulated `runningClientTotal` is used to print the client total field.
+<6> `runningGrandTotal` is increased by the current client total value; `runningClientTotal` is set to zero for the next client.
+<7> Accumulated `runningGrandTotal` is printed in the end and thread-local variables are cleared.
+
 [[orders-by-client-runtime]]
 === Runtime Definition
 
+The runtime variant of the report is called `Orders by Client (runtime)` and can be opened from the *Reports -> Reports* view.
+
+Instead of accumulating subtotals and totals in thread-local variables, the runtime report uses separate JPQL queries to calculate them.
+
+The `ClientTotal` band dataset query:
+
+[source]
+----
+select sum(o.total) as "clientTotal"
+from Order_ o
+where o.client.id = ${Client.id} and
+    (${dateFrom} is null or o.date >= ${dateFrom}) and
+    (${dateTo} is null or o.date <= ${dateTo})
+----
+
+The `GrandTotal` band dataset query:
+
+[source]
+----
+select sum(o.total) as "grandTotal"
+from Order_ o
+where (${dateFrom} is null or o.date >= ${dateFrom}) and
+    (${dateTo} is null or o.date <= ${dateTo})
+----
+
+The JPQL syntax of report queries is slightly different from the standard JPQL:
+
+. `as` operator is used to provide field names. For example: `select sum(o.total) as "clientTotal"`.
+. Parameters are provided using `$\{param_name}` placeholders. For example: `o.date >= $\{dateFrom}`.
 
 [[orders-by-status]]
-== Orders by Status
+== Orders by Status Report
 
 This is a tabular report with a chart. It shows a high-level sales pipeline: count and sum of orders per status in a period.
 
@@ -283,12 +480,44 @@ image::template-xlsx-diagram-2.png[width="919",link="_images/template-xlsx-diagr
 [[orders-by-status-design-time]]
 === Design-Time Definition
 
+The `Orders by Status` report structure is defined by the https://github.com/jmix-framework/jmix-reports-sample/blob/{page-origin-branch}/src/main/java/com/company/crm/report/OrdersByStatusReport.java[OrdersByStatusReport^] class.
+
+The `Chart` band has no datasets, but it is still printed once:
+
+[source,java,indent=0]
+----
+include::example$src/main/java/com/company/crm/report/OrdersByStatusReport.java[tags=chart-band;report-class]
+----
+
+This behavior is defined by the xref:reports:configuration.adoc#jmix.reports.put-empty-row-if-no-data-selected[jmix.reports.put-empty-row-if-no-data-selected] application property.
+
+The `OrderStatus` band has a dataset that delegates to a `ReportDataLoader`:
+
+[source,java,indent=0]
+----
+include::example$src/main/java/com/company/crm/report/OrdersByStatusReport.java[tags=order-status-band;report-class]
+----
+
 [[orders-by-status-runtime]]
 === Runtime Definition
 
+The runtime variant of the report is called `Orders by Status (runtime)` and can be opened from the *Reports -> Reports* view.
+
+It uses a JPQL query for calculating aggregated values in the `OrderStatus` band:
+
+[source]
+----
+select o.status as "status",
+    count(o) as "count", sum(o.total) as "total"
+from Order_ o
+where (${dateFrom} is null or o.date >= ${dateFrom}) and
+    (${dateTo} is null or o.date <= ${dateTo})
+group by o.status
+order by o.status
+----
 
 [[revenue-by-month]]
-== Revenue by Month
+== Revenue by Month Report
 
 This is a cross-tab report that shows monthly total payments by client.
 
@@ -337,14 +566,127 @@ Assuming that the cross-tab band name is `Revenue`, the named ranges needed to o
 [[revenue-by-month-design-time]]
 === Design-Time Definition
 
+The `Revenue by Month` report structure is defined by the https://github.com/jmix-framework/jmix-reports-sample/blob/{page-origin-branch}/src/main/java/com/company/crm/report/RevenueByMonthReport.java[RevenueByMonthReport^] class.
+
+Below, we will consider elements that distinguish this report from the others.
+
+[source,java,indent=0]
+----
+include::example$src/main/java/com/company/crm/report/RevenueByMonthReport.java[tags=input-params;report-class]
+----
+<1> Both input parameters are required. Users cannot run the report without entering parameter values.
+<2> Input parameters are validated using `ParameterValidator` objects returned by `@InputParameterDelegate` methods. Entered dates must be the beginning and the end of months.
+<3> `ParametersCrossValidator` returned from the `@ReportDelegate` method performs additional validation of all entered parameters: it ensures the "From" date is before the "To" date.
+
+The `Revenue` cross-tab band and its datasets are defined as follows:
+
+[source,java,indent=0]
+----
+include::example$src/main/java/com/company/crm/report/RevenueByMonthReport.java[tags=crosstab-datasets;report-class]
+----
+<1> Annotation attribute `orientation = Orientation.CROSS` specifies the cross-tab band.
+<2> Dataset with the `<band_name>_dynamic_header` predefined name provides data for column headers.
+<3> Dataset with the `<band_name>_master_data` predefined name provides data for row headers.
+<4> Dataset with the `<band_name>` predefined name provides data for intersection cells.
+<5> The cells dataset returns also identifiers of rows and columns as `<band_name>_master_data@<id_field_name>` and `<band_name>_dynamic_header@<id_field_name>` fields. These identifiers enable the reporting engine to correspond the cell with the respective row and column.
+
 [[revenue-by-month-runtime]]
 === Runtime Definition
 
+The runtime variant of the report is called `Revenue by Month (runtime)` and can be opened from the *Reports -> Reports* view.
+
+It uses JPQL and Groovy datasets shown below.
+
+The `Revenue_dynamic_header` dataset's Groovy script for columns:
+
+[source,groovy]
+----
+import com.company.crm.report.ReportUtils
+import java.time.YearMonth
+import java.time.format.TextStyle
+
+def dateFrom = params["dateFrom"]
+def dateTo = params["dateTo"]
+
+def start = YearMonth.from(ReportUtils.dateToLocalDate(dateFrom));
+def end = YearMonth.from(ReportUtils.dateToLocalDate(dateTo));
+
+def result = []
+def current = start
+while (!current.isAfter(end)) {
+    result.add([
+        'monthId': current.getYear() + "-" + current.getMonthValue(),
+        'monthName': current.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " + current.getYear(),
+        'year': current.getYear(),
+        'month': current.getMonthValue()
+    ])
+    current = current.plusMonths(1)
+}
+return result
+----
+
+The `Revenue_master_data` dataset's JPQL query for rows:
+
+[source]
+----
+select c.id as "clientId", c.name as "name"
+from Client c
+where exists (
+        select 1 from Payment p where p.invoice.client.id = c.id and
+            p.date >= ${dateFrom} and p.date <= ${dateTo}
+        )
+order by c.name
+----
+
+The `Revenue` dataset's Groovy script for intersection cells:
+
+[source,groovy]
+----
+def headerList = params["Revenue_dynamic_header"]
+
+def masterDataList = params["Revenue_master_data"]
+def clientIds = masterDataList.collect { it['clientId'] }
+
+def result = []
+headerList.each { headerData ->
+    dataManager.loadValues('''
+                select p.invoice.client.id, sum(p.amount) from Payment p
+                where extract(month from p.date) = :month and
+                    extract(year from p.date) = :year and
+                    p.invoice.client.id in :clientIds
+                group by p.invoice.client.id
+                ''')
+            .properties("clientId", "amount")
+            .parameter("month", headerData["month"])
+            .parameter("year", headerData["year"])
+            .parameter("clientIds", clientIds)
+            .list()
+            .each { kv ->
+                result.add([
+                    "Revenue_dynamic_header@monthId": headerData["monthId"],
+                    "Revenue_master_data@clientId": kv.getValue("clientId"),
+                    "amount": kv.getValue("amount")
+                ])
+            }
+}
+return result
+----
+
+[[importing-runtime-reports]]
+== Importing Runtime Reports
+
+In this project, runtime report definitions are manually exported to ZIP files from the *Reports* view and stored in the application resources. They are loaded into the database at the start of the application by the following bean:
+
+[source,java]
+----
+include::example$src/main/java/com/company/crm/init/RuntimeReportsImporter.java[tags=class]
+----
+<1> `ReportImportExport` bean allows you to load runtime report definitions to the database from ZIP archives.
+<2> The import procedure is invoked on application start.
+<3> It requires the system authentication.
 
 [[project-configuration]]
 == Project Configuration
-
-The application project includes the xref:reports:index.adoc[] add-on.
 
 To convert resulting documents from office formats (DOCX, XLSX) to PDF, the application uses the locally installed LibreOffice. This is defined by the following properties:
 
@@ -354,34 +696,19 @@ To convert resulting documents from office formats (DOCX, XLSX) to PDF, the appl
 include::example$src/main/resources/application.properties[tags=office]
 ----
 
-// [[templates]]
-// == Templates
-//
-// Templates of the design-time reports are located in the `src/main/resources/com/company/crm/report` directory. They are loaded by the report generator from the application resources.
-//
-// Templates of the runtime reports are stored in the database together with the report structure. In this sample application, the runtime templates are identical to the design-time ones.
-//
-// == Defining Report Structure in Code
-//
-// Report data structure can be defined in your application source code using an annotated class. In this case, the report definition is stored in a version control system, such as Git, and is built into the application executable.
-//
-// The downside is that application users cannot modify the report at runtime.
-//
-// === @ReportDef
-//
-// The `@ReportDef` annotation is a mandatory element of a report definition:
-//
-// [source,java,indent=0]
-// ----
-// include::example$src/main/java/com/company/crm/report/ClientProfileReport.java[tags=report-def;report-class]
-// ----
-// <1> Report code is used to identify the report when invoking API.
-// <2> Report group definition class.
-// <3> Report name and description to display in UI.
-//
-//
-// == Access Control
-//
-// == Running from Views
-
+[[summary]]
 == Summary
+
+This guide demonstrates the following features of the xref:reports:index.adoc[Jmix Reports] add-on using examples from a sample CRM application:
+
+- Band-based report structures, including master-detail and cross-tab bands.
+- Multiple template types: HTML with Freemarker directives, DOCX with placeholders, XLSX with named ranges and diagrams.
+- Output formats: PDF, DOCX, XLSX, HTML.
+- Design-time report definitions using annotations such as `@ReportDef`, `@TemplateDef`, `@InputParameterDef`, `@BandDef`, and `@DataSetDef`.
+- Runtime report definitions stored in the database, editable via the UI, with JPQL queries and Groovy scripts for data loading.
+- Input parameters, including entity types, date ranges, and validations using delegate methods.
+- Data loading via delegate methods, thread-local variables for totals, and aggregated JPQL queries.
+- Report execution actions integrated into entity list and detail views.
+- Role-based permissions for report access.
+- Importing runtime reports from ZIP files on application startup.
+- Configuration for converting office formats to PDF using LibreOffice.

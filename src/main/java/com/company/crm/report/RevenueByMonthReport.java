@@ -44,19 +44,21 @@ import static com.company.crm.report.ReportUtils.getParam;
         outputNamePattern = "revenue-by-month.xlsx"
 )
 
+// tag::input-params[]
 @InputParameterDef(
         alias = "dateFrom",
         name = "From",
         type = ParameterType.DATE,
-        required = true
+        required = true // <1>
 )
 
 @InputParameterDef(
         alias = "dateTo",
         name = "To",
         type = ParameterType.DATE,
-        required = true
+        required = true // <1>
 )
+// end::input-params[]
 
 @BandDef(
         name = "Root",
@@ -69,25 +71,33 @@ import static com.company.crm.report.ReportUtils.getParam;
         dataSets = @DataSetDef(name = "header", type = DataSetType.DELEGATE)
 )
 
+// tag::crosstab-datasets[]
 @BandDef(
         name = "Revenue",
         parent = "Root",
-        orientation = Orientation.CROSS,
-        dataSets = {@DataSetDef(name = "Revenue_dynamic_header", type = DataSetType.DELEGATE),
-                @DataSetDef(name = "Revenue_master_data", type = DataSetType.DELEGATE),
-                @DataSetDef(name = "Revenue", type = DataSetType.DELEGATE)
+        orientation = Orientation.CROSS, // <1>
+        dataSets = {
+                @DataSetDef(name = "Revenue_dynamic_header", // <2>
+                        type = DataSetType.DELEGATE),
+                @DataSetDef(name = "Revenue_master_data", // <3>
+                        type = DataSetType.DELEGATE),
+                @DataSetDef(name = "Revenue", // <4>
+                        type = DataSetType.DELEGATE)
         }
 )
-
+// end::crosstab-datasets[]
+// tag::report-class[]
 public class RevenueByMonthReport {
 
+    // end::report-class[]
     private final DataManager dataManager;
 
     public RevenueByMonthReport(DataManager dataManager) {
         this.dataManager = dataManager;
     }
 
-    @InputParameterDelegate(alias = "dateFrom")
+    // tag::input-params[]
+    @InputParameterDelegate(alias = "dateFrom") // <2>
     public ParameterValidator<Date> dateFromValidator() {
         return value -> {
             if (!Objects.equals(value, ReportUtils.getFirstDayOfMonth(value))) {
@@ -96,7 +106,7 @@ public class RevenueByMonthReport {
         };
     }
     
-    @InputParameterDelegate(alias = "dateTo")
+    @InputParameterDelegate(alias = "dateTo") // <2>
     public ParameterValidator<Date> dateToValidator() {
         return value -> {
             if (!Objects.equals(value, ReportUtils.getLastDayOfMonth(value))) {
@@ -105,7 +115,7 @@ public class RevenueByMonthReport {
         };
     }
 
-    @ReportDelegate()
+    @ReportDelegate // <3>
     public ParametersCrossValidator parametersCrossValidator() {
         return params -> {
             Date dateFrom = getParam(params, "dateFrom");
@@ -115,6 +125,7 @@ public class RevenueByMonthReport {
             }
         };
     }
+    // end::input-params[]
 
     @DataSetDelegate(name = "header")
     public ReportDataLoader headerDataLoader() {
@@ -128,7 +139,8 @@ public class RevenueByMonthReport {
                 );
     }
 
-    @DataSetDelegate(name = "Revenue_dynamic_header")
+    // tag::crosstab-datasets[]
+    @DataSetDelegate(name = "Revenue_dynamic_header") // <2>
     public ReportDataLoader revenueDynamicHeaderDataLoader() {
         return (reportQuery, parentBand, params) -> {
             Date dateFrom = getParam(params, "dateFrom");
@@ -152,7 +164,7 @@ public class RevenueByMonthReport {
         };
     }
 
-    @DataSetDelegate(name = "Revenue_master_data")
+    @DataSetDelegate(name = "Revenue_master_data") // <3>
     public ReportDataLoader revenueMasterDataDataLoader() {
         return (reportQuery, parentBand, params) -> {
             List<Client> clients = dataManager.load(Client.class)
@@ -172,7 +184,7 @@ public class RevenueByMonthReport {
         };
     }
 
-     @DataSetDelegate(name = "Revenue")
+     @DataSetDelegate(name = "Revenue") // <4>
      public ReportDataLoader revenueDataLoader() {
         return (reportQuery, parentBand, params) -> {
             List<Map<String, Object>> headerList = getParam(params, "Revenue_dynamic_header");
@@ -198,8 +210,10 @@ public class RevenueByMonthReport {
                         .list()
                         .forEach(kv -> {
                             Map<String, Object> map = new HashMap<>();
-                            map.put("Revenue_dynamic_header@monthId", headerData.get("monthId"));
-                            map.put("Revenue_master_data@clientId", kv.getValue("clientId"));
+                            map.put("Revenue_dynamic_header@monthId", // <5>
+                                    headerData.get("monthId"));
+                            map.put("Revenue_master_data@clientId", // <5>
+                                    kv.getValue("clientId"));
                             map.put("amount", kv.getValue("amount"));
                             result.add(map);
                         });
@@ -207,4 +221,7 @@ public class RevenueByMonthReport {
             return result;
         };
     }
+    // end::crosstab-datasets[]
+    // tag::report-class[]
 }
+// end::report-class[]

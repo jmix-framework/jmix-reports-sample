@@ -14,10 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 @ViewController(id = "Client.detail")
 @ViewDescriptor(path = "client-detail-view.xml")
 @EditedEntityContainer("clientDc")
+// tag::report-actions[]
 public class ClientDetailView extends StandardDetailView<Client> {
 
     @Autowired
-    private UiReportRunner uiReportRunner;
+    private UiReportRunner uiReportRunner; // <1>
 
     @Subscribe(id = "printClientProfileButton", subject = "clickListener")
     public void onPrintClientProfileButtonClick(final ClickEvent<JmixButton> event) {
@@ -28,3 +29,4 @@ public class ClientDetailView extends StandardDetailView<Client> {
                 .runAndShow();
     }
 }
+// end::report-actions[]

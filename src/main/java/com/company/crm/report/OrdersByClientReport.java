@@ -13,6 +13,7 @@ import io.jmix.reports.entity.DataSetType;
 import io.jmix.reports.entity.ParameterType;
 import io.jmix.reports.entity.ReportOutputType;
 import io.jmix.reports.yarg.loaders.ReportDataLoader;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -24,7 +25,7 @@ import java.util.Map;
 @ReportDef(
         code = "orders-by-client",
         group = DesignTimeReportsGroup.class,
-        name = "Orders by Client with Status Grouping",
+        name = "Orders by Client",
         description = "Multi-level tabular report with subtotals",
         uuid = "c8a32999-af6a-45c6-8704-2ccdcac6c953"
 )
@@ -94,17 +95,20 @@ import java.util.Map;
         parent = "Root",
         dataSets = @DataSetDef(name = "grandTotal", type = DataSetType.DELEGATE)
 )
-
+// tag::report-class[]
 public class OrdersByClientReport {
+// end::report-class[]
 
-    private final DataManager dataManager;
+    // tag::data-loading[]
+    @Autowired
+    private DataManager dataManager;
 
-    private final ThreadLocal<BigDecimal> runningClientTotal = ThreadLocal.withInitial(() -> BigDecimal.ZERO);
-    private final ThreadLocal<BigDecimal> runningGrandTotal = ThreadLocal.withInitial(() -> BigDecimal.ZERO);
+    private final ThreadLocal<BigDecimal> runningClientTotal =
+            ThreadLocal.withInitial(() -> BigDecimal.ZERO); // <1>
+    private final ThreadLocal<BigDecimal> runningGrandTotal =
+            ThreadLocal.withInitial(() -> BigDecimal.ZERO); // <1>
 
-    public OrdersByClientReport(DataManager dataManager) {
-        this.dataManager = dataManager;
-    }
+    // end::data-loading[]
 
     @DataSetDelegate(name = "header")
     public ReportDataLoader headerDataLoader() {
@@ -118,6 +122,7 @@ public class OrdersByClientReport {
                 );
     }
 
+    // tag::data-loading[]
     @DataSetDelegate(name = "client")
     public ReportDataLoader clientDataLoader() {
         return (reportQuery, parentBand, params) -> {
@@ -126,7 +131,7 @@ public class OrdersByClientReport {
             runningClientTotal.set(BigDecimal.ZERO);
             runningGrandTotal.set(BigDecimal.ZERO);
 
-            List<Client> clients = dataManager.load(Client.class)
+            List<Client> clients = dataManager.load(Client.class) // <2>
                     .query("""
                             select c from Client c
                             where exists (
@@ -143,6 +148,7 @@ public class OrdersByClientReport {
                     .toList();
         };
     }
+    // end::data-loading[]
 
     @DataSetDelegate(name = "orderStatus")
     public ReportDataLoader orderStatusDataLoader() {
@@ -169,9 +175,12 @@ public class OrdersByClientReport {
         };
     }
 
+    // tag::data-loading[]
     @DataSetDelegate(name = "order")
     public ReportDataLoader orderDataLoader() {
         return (reportQuery, parentBand, params) -> {
+            Object clientId = parentBand.getParentBand().getData().get("id");  // <3>
+            Object statusId = parentBand.getData().get("statusId");
             List<Order> orderList = dataManager.load(Order.class)
                     .query("""
                             select o from Order_ o
@@ -179,14 +188,16 @@ public class OrdersByClientReport {
                                 (:dateFrom is null or o.date >= :dateFrom) and
                                 (:dateTo is null or o.date <= :dateTo)
                             order by o.date""")
-                    .parameter("clientId", parentBand.getParentBand().getData().get("id"))
-                    .parameter("status", parentBand.getData().get("statusId"))
+                    .parameter("clientId", clientId)
+                    .parameter("status", statusId)
                     .parameter("dateFrom", params.get("dateFrom"))
                     .parameter("dateTo", params.get("dateTo"))
                     .list();
             return orderList.stream()
                     .map(order -> {
-                        runningClientTotal.set(runningClientTotal.get().add(order.getTotal()));
+                        runningClientTotal.set(
+                                runningClientTotal.get().add(order.getTotal())
+                        ); // <4>
                         Map<String, Object> map = new HashMap<>();
                         map.put("order", order);
                         map.put("date", order.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
@@ -203,9 +214,11 @@ public class OrdersByClientReport {
     public ReportDataLoader clientTotalDataLoader() {
         return (reportQuery, parentBand, params) -> {
             Map<String, Object> map = new HashMap<>();
-            map.put("clientTotal", runningClientTotal.get());
+            map.put("clientTotal", runningClientTotal.get()); // <5>
 
-            runningGrandTotal.set(runningGrandTotal.get().add(runningClientTotal.get()));
+            runningGrandTotal.set(
+                    runningGrandTotal.get().add(runningClientTotal.get())
+            ); // <6>
             runningClientTotal.set(BigDecimal.ZERO);
 
             return List.of(map);
@@ -216,7 +229,7 @@ public class OrdersByClientReport {
     public ReportDataLoader grandTotalDataLoader() {
         return (reportQuery, parentBand, params) -> {
             Map<String, Object> map = new HashMap<>();
-            map.put("grandTotal", runningGrandTotal.get());
+            map.put("grandTotal", runningGrandTotal.get()); // <7>
 
             // Clean up thread locals on report finish
             runningClientTotal.remove();
@@ -225,4 +238,7 @@ public class OrdersByClientReport {
             return List.of(map);
         };
     }
+    // end::data-loading[]
+// tag::report-class[]
 }
+// end::report-class[]

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.io.InputStream;
 
+// tag::class[]
 @Component
 public class RuntimeReportsImporter {
 
@@ -23,20 +24,19 @@ public class RuntimeReportsImporter {
     private Resources resources;
 
     @Autowired
-    protected ReportImportExport reportImportExport;
+    protected ReportImportExport reportImportExport; // <1>
 
     private static final String[] archives = new String[] { "client-profile.zip", "orders-by-client.zip",
             "orders-by-status.zip", "revenue-by-month.zip" };
 
-    @Authenticated
-    @EventListener(ApplicationReadyEvent.class)
+    @EventListener(ApplicationReadyEvent.class) // <2>
+    @Authenticated // <3>
     public void importReports(ApplicationReadyEvent event) {
         log.info("Starting runtime report import");
         for (String archive : archives) {
             try (InputStream is = resources.getResourceAsStream("/com/company/crm/runtime-reports/" + archive)) {
                 if (is != null) {
-                    byte[] bytes = IOUtils.toByteArray(is);
-                    reportImportExport.importReports(bytes);
+                    reportImportExport.importReports(IOUtils.toByteArray(is));
                 } else {
                     log.warn("Report file not found: {}", archive);
                 }
@@ -47,3 +47,4 @@ public class RuntimeReportsImporter {
         log.info("Runtime report import completed");
     }
 }
+// end::class[]

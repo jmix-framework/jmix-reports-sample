@@ -32,30 +32,39 @@
                        dataLoader="clientsDl">
             <properties include=".*"/>
         </genericFilter>
+        <!-- tag::report-actions[] -->
         <hbox id="buttonsPanel" classNames="buttons-panel">
+            <!-- ... -->
+            <!-- end::report-actions[] -->
             <button id="createButton" action="clientsDataGrid.createAction"/>
             <button id="editButton" action="clientsDataGrid.editAction"/>
             <button id="removeButton" action="clientsDataGrid.removeAction"/>
+            <!-- tag::report-actions[] -->
             <comboButton text="Reports">
                 <items>
                     <actionItem id="reportForEntityActionItem" ref="clientsDataGrid.runListEntityReportAction"/>
                     <actionItem id="reportActionItem" ref="clientsDataGrid.runReportAction"/>
                 </items>
             </comboButton>
+            <!-- end::report-actions[] -->
             <simplePagination id="pagination" dataLoader="clientsDl"/>
+            <!-- tag::report-actions[] -->
         </hbox>
-        <dataGrid id="clientsDataGrid"
-                  width="100%"
-                  minHeight="20em"
-                  dataContainer="clientsDc"
-                  columnReorderingAllowed="true">
+        <dataGrid id="clientsDataGrid" width="100%" minHeight="20em"
+                  dataContainer="clientsDc" columnReorderingAllowed="true">
             <actions>
+                <!-- ... -->
+                <!-- end::report-actions[] -->
                 <action id="createAction" type="list_create"/>
                 <action id="editAction" type="list_edit"/>
                 <action id="removeAction" type="list_remove"/>
-                <action id="runListEntityReportAction" type="report_runListEntityReport" text="Reports for entity"/>
-                <action id="runReportAction" type="report_runReport" text="Reports" icon="vaadin:table"/>
+                <!-- tag::report-actions[] -->
+                <action id="runListEntityReportAction" text="Reports for entity"
+                        type="report_runListEntityReport"/> <!--1-->
+                <action id="runReportAction" text="Reports" icon="vaadin:table"
+                        type="report_runReport"/> <!--2-->
             </actions>
+            <!-- end::report-actions[] -->
             <columns resizable="true">
                 <column property="name"/>
                 <column property="fullName"/>

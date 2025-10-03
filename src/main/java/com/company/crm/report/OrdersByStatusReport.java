@@ -13,6 +13,7 @@ import io.jmix.reports.entity.DataSetType;
 import io.jmix.reports.entity.ParameterType;
 import io.jmix.reports.entity.ReportOutputType;
 import io.jmix.reports.yarg.loaders.ReportDataLoader;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -63,24 +64,30 @@ import java.util.Map;
         dataSets = @DataSetDef(name = "header", type = DataSetType.DELEGATE)
 )
 
+// tag::order-status-band[]
 @BandDef(
         name = "OrderStatus",
         parent = "Root",
         dataSets = @DataSetDef(name = "orderStatus", type = DataSetType.DELEGATE)
 )
+// end::order-status-band[]
 
+// tag::chart-band[]
 @BandDef(
         name = "Chart",
         parent = "Root"
 )
-
+// end::chart-band[]
+// tag::report-class[]
 public class OrdersByStatusReport {
+    // end::report-class[]
 
-    private final DataManager dataManager;
+    // tag::order-status-band[]
 
-    public OrdersByStatusReport(DataManager dataManager) {
-        this.dataManager = dataManager;
-    }
+    @Autowired
+    private DataManager dataManager;
+
+    // end::order-status-band[]
 
     @DataSetDelegate(name = "header")
     public ReportDataLoader headerDataLoader() {
@@ -94,6 +101,7 @@ public class OrdersByStatusReport {
                 );
     }
 
+    // tag::order-status-band[]
     @DataSetDelegate(name = "orderStatus")
     public ReportDataLoader orderStatusDataLoader() {
         return (reportQuery, parentBand, params) -> {
@@ -117,5 +125,7 @@ public class OrdersByStatusReport {
                     .toList();
         };
     }
-
+    // end::order-status-band[]
+    // tag::report-class[]
 }
+// end::report-class[]
