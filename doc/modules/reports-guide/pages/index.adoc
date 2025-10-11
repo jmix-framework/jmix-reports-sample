@@ -1,6 +1,7 @@
 :sample-project: jmix-reports-sample
 
 = Report Generation
+:page-aliases: reports:sample-reports.adoc
 
 The xref:reports:index.adoc[Jmix Reports] add-on allows developers to create dynamic, data-driven reports directly within Jmix applications, supporting a variety of templates and output formats.
 
